@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CropImage">
+        <attr name="borderWidth" format="dimension" />   
+        <attr name="borderColor" format="color" />
+        <attr name="shaderColor" format="color" />
+        <attr name="scaleMax" format="float" />
+        <attr name="scaleMin" format="float" />
+        <attr name="cropShape">
+            <flag name="rectangle" value="0" />
+            <flag name="oval" value="1" />
+        </attr>
+    </declare-styleable>
+    
+</resources>

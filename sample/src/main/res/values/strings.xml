@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ZoomCropImage</string>
+
+    <string name="take_or_select_a_picture">TAKE OR SELECT A PICTURE</string>
+</resources>

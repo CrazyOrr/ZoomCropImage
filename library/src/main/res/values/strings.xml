@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ZoomCropImage</string>
+    <string name="confirm">confirm</string>
+    <string name="cancel">cancel</string>
+</resources>

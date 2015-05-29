@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:zoomcropimage="http://schemas.android.com/apk/com.wl.zoomcropimage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/id_ll_btns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="2dp" >
+
+        <Button
+            android:id="@+id/id_btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+
+        <FrameLayout
+            android:layout_width="4dp"
+            android:layout_height="wrap_content" >
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/id_btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/confirm" />
+    </LinearLayout>
+
+    <com.wl.zoomcropimage.CropImageLayout
+        android:id="@+id/id_crop_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/id_ll_btns"
+        zoomcropimage:borderColor="@android:color/white"
+        zoomcropimage:borderWidth="1dp"
+        zoomcropimage:shaderColor="#BB000000" />
+
+</RelativeLayout>
