@@ -39,7 +39,7 @@ public void onActivityResult(int requestCode, int resultCode, Intent data) {
 ```
 
 ## Credits
-* [hongyangAndroid]'s [Android 高仿微信头像截取 打造不一样的自定义控件][1]
+* [hongyangAndroid][1]'s [Android 高仿微信头像截取 打造不一样的自定义控件][2]
 
 ## License
 
