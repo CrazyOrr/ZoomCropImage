@@ -114,6 +114,7 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
             mFileName = DEFAULT_CROPPED_IMAGE_NAME;
         }
 
+        // TODO customize style of the buttons
         Button btnCancel = (Button) findViewById(R.id.id_btn_cancel);
         btnCancel.setOnClickListener(this);
         Button btnConfirm = (Button) findViewById(R.id.id_btn_confirm);
