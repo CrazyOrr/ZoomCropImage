@@ -40,6 +40,8 @@ public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 ## Credits
 * [hongyangAndroid][1]'s [Android 高仿微信头像截取 打造不一样的自定义控件][2]
+[1]: https://github.com/hongyangAndroid
+[2]: http://blog.csdn.net/lmj623565791/article/details/39761281
 
 ## License
 
@@ -56,6 +58,3 @@ public void onActivityResult(int requestCode, int resultCode, Intent data) {
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-    
-   [1]: https://github.com/hongyangAndroid
-   [2]: http://blog.csdn.net/lmj623565791/article/details/39761281
