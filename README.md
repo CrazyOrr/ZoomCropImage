@@ -43,7 +43,7 @@ public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 ## License
 
-    Copyright 2015 Wang Lei
+    Copyright 2015 Lei Wang
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
