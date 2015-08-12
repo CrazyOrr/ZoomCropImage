@@ -115,8 +115,8 @@ public class CropImageLayout extends RelativeLayout {
 	 * @param uri
 	 */
 	public void setImageURI(Uri uri){
-		String path = uri.getPath();
-		
+		String path = FileUtils.getPath(getContext(), uri);
+
 		WindowManager windowManager = (WindowManager)getContext()
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display windowDisplay = windowManager.getDefaultDisplay();
@@ -155,8 +155,8 @@ public class CropImageLayout extends RelativeLayout {
 		if(mWidth != 0 && mHeight != 0
 				&& mOutputWidth != 0 && mOutputHeight != 0){
 			final double CROP_SIZE_RATIO = 0.9;
-			double scaleWidth = Math.floor(mWidth * CROP_SIZE_RATIO * 1.0f / mOutputWidth);
-			double scaleHeight = Math.floor(mHeight * CROP_SIZE_RATIO * 1.0f / mOutputHeight);
+			double scaleWidth = Math.floor(mWidth * CROP_SIZE_RATIO / mOutputWidth);
+			double scaleHeight = Math.floor(mHeight * CROP_SIZE_RATIO / mOutputHeight);
 			//放大倍数取较小值
 			double scale = Math.min(scaleWidth, scaleHeight);
 			
