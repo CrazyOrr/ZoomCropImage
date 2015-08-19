@@ -13,6 +13,8 @@ buildscript {
 }
 
 allprojects {
+    group 'com.github.crazyorr'
+    version '0.1.0'
     repositories {
         jcenter()
     }

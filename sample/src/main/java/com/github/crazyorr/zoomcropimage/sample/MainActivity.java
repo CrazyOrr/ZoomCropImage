@@ -1,6 +1,7 @@
-package com.wl.zoomcropimage.sample;
+package com.github.crazyorr.zoomcropimage.sample;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,8 +10,8 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.wl.zoomcropimage.CropShape;
-import com.wl.zoomcropimage.ZoomCropImageActivity;
+import com.github.crazyorr.zoomcropimage.CropShape;
+import com.github.crazyorr.zoomcropimage.ZoomCropImageActivity;
 
 import java.io.File;
 

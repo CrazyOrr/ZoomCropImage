@@ -1,4 +1,4 @@
-package com.wl.zoomcropimage;
+package com.github.crazyorr.zoomcropimage;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

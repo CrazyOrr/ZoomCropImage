@@ -1,4 +1,4 @@
-package com.wl.zoomcropimage;
+package com.github.crazyorr.zoomcropimage;
 
 import android.content.Context;
 import android.graphics.Bitmap;

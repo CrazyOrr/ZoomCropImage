@@ -1,4 +1,4 @@
-package com.wl.zoomcropimage.sample;
+package com.github.crazyorr.zoomcropimage;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
