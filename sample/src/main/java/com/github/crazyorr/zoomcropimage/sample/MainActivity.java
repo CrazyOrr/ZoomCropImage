@@ -1,12 +1,12 @@
 package com.github.crazyorr.zoomcropimage.sample;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,6 +18,7 @@ import java.io.File;
 
 public class MainActivity extends Activity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_CODE_SELECT_PICTURE = 0;
     private static final int REQUEST_CODE_CROP_PICTURE = 1;
 
@@ -25,6 +26,31 @@ public class MainActivity extends Activity {
     private static final int PICTURE_HEIGHT = 800;
 
     private Uri mPictureUri;
+
+    public static File createPictureFile(String fileName) {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        if (!Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
+            return null;
+        }
+
+        File pictureStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), BuildConfig.APPLICATION_ID);
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (!pictureStorageDir.exists()) {
+            if (!pictureStorageDir.mkdirs()) {
+                Log.d(TAG, "failed to create directory");
+                return null;
+            }
+        }
+
+        // Create a media file name
+        File pictureFile = new File(pictureStorageDir.getPath() + File.separator + fileName);
+        return pictureFile;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +63,7 @@ public class MainActivity extends Activity {
                 pickIntent.setType("image/*");
 
                 Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                mPictureUri = Uri.fromFile(createFile(
-                        Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + getPackageName(),
-                        "picture.png"));
+                mPictureUri = Uri.fromFile(createPictureFile("picture.png"));
 
                 takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPictureUri);
 
@@ -61,23 +85,12 @@ public class MainActivity extends Activity {
                 switch (resultCode) {
                     case Activity.RESULT_OK:
 
-                        final boolean isCamera;
-                        if (data == null) {
-                            isCamera = true;
-                        } else {
-                            final String action = data.getAction();
-                            if (action == null) {
-                                isCamera = false;
-                            } else {
-                                isCamera = action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
-                            }
+                        Uri selectedImageUri = null;
+                        if (data != null) {
+                            selectedImageUri = data.getData();
                         }
-
-                        Uri selectedImageUri;
-                        if (isCamera) {
+                        if (selectedImageUri == null) {
                             selectedImageUri = mPictureUri;
-                        } else {
-                            selectedImageUri = data == null ? null : data.getData();
                         }
 
                         Intent intent = new Intent(this, ZoomCropImageActivity.class);
@@ -93,12 +106,12 @@ public class MainActivity extends Activity {
                 }
                 break;
             case REQUEST_CODE_CROP_PICTURE:
-                switch(resultCode){
+                switch (resultCode) {
                     case ZoomCropImageActivity.CROP_SUCCEEDED:
                         if (data != null) {
                             Uri croppedPictureUri = data
                                     .getParcelableExtra(ZoomCropImageActivity.INTENT_EXTRA_URI);
-                            ImageView iv = (ImageView)findViewById(R.id.id_iv);
+                            ImageView iv = (ImageView) findViewById(R.id.id_iv);
                             // workaround for ImageView to refresh cache
                             iv.setImageURI(null);
                             iv.setImageURI(croppedPictureUri);
@@ -112,15 +125,4 @@ public class MainActivity extends Activity {
         }
 
     }
-
-    private File createFile(String dir, String name){
-        File dirFile = new File(dir);
-        if (!dirFile.exists()) {
-            dirFile.mkdirs();
-        }
-
-        File file = new File(dirFile, name);
-        return file;
-    }
-
 }
