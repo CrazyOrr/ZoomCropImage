@@ -1,7 +1,6 @@
 package com.github.crazyorr.zoomcropimage;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,6 +13,9 @@ import android.widget.Button;
 
 import java.io.File;
 import java.io.FileOutputStream;
+
+import static com.github.crazyorr.zoomcropimage.FileUtils.createFile;
+import static com.github.crazyorr.zoomcropimage.FileUtils.isSdCardMounted;
 
 /**
  * http://blog.csdn.net/lmj623565791/article/details/39761281
@@ -47,12 +49,14 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
      * intent extra name : mFileName
      */
     public static final String INTENT_EXTRA_FILE_NAME = "INTENT_EXTRA_FILE_NAME";
-
+    //crop status
+    public static final int CROP_SUCCEEDED = 0;
+    public static final int CROP_CANCELLED = 1;
+    public static final int CROP_FAILED = 2;
     /**
      * default cropped image name
      */
     private static final String DEFAULT_CROPPED_IMAGE_NAME = "cropped_picture.png";
-
     /**
      * default cropped image width
      */
@@ -61,16 +65,26 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
      * default cropped image height
      */
     private static final int DEFAULT_OUTPUT_HEIGHT = 100;
-
-    //crop status
-    public static final int CROP_SUCCEEDED = 0;
-    public static final int CROP_CANCELLED = 1;
-    public static final int CROP_FAILED = 2;
-
     private CropImageLayout mCropImageLayout;
 
     private String mDir;
     private String mFileName;
+
+    /**
+     * get default directory to save cropped image
+     *
+     * @return
+     */
+    private static String getDefaultSaveDir() {
+        String path;
+        if (isSdCardMounted()) {
+            path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    + File.separator + BuildConfig.APPLICATION_ID;
+        } else {
+            throw new RuntimeException("No SD card is mounted.");
+        }
+        return path;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +95,9 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
 
         // Image Uri
         Uri uri = getIntent().getParcelableExtra(INTENT_EXTRA_URI);
-        if(uri == null){
+        if (uri == null) {
             throw new NullPointerException("uri == null");
-        }else{
+        } else {
             mCropImageLayout.setImageURI(uri);
         }
 
@@ -104,13 +118,13 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
 
         // directory
         mDir = getIntent().getStringExtra(INTENT_EXTRA_SAVE_DIR);
-        if(mDir == null){
-            mDir = getDefaultSaveDir(this);
+        if (mDir == null) {
+            mDir = getDefaultSaveDir();
         }
 
         // file name
         mFileName = getIntent().getStringExtra(INTENT_EXTRA_FILE_NAME);
-        if(mFileName == null){
+        if (mFileName == null) {
             mFileName = DEFAULT_CROPPED_IMAGE_NAME;
         }
 
@@ -119,7 +133,6 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
         btnCancel.setOnClickListener(this);
         Button btnConfirm = (Button) findViewById(R.id.id_btn_confirm);
         btnConfirm.setOnClickListener(this);
-
     }
 
     @Override
@@ -157,35 +170,5 @@ public class ZoomCropImageActivity extends Activity implements OnClickListener {
             setResult(CROP_CANCELLED);
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    public static File createFile(String dir, String name) {
-        File dirFile = new File(dir);
-        if (!dirFile.exists()) {
-            dirFile.mkdirs();
-        }
-
-        File file = new File(dirFile, name);
-        return file;
-    }
-
-    public static boolean isSdCardMounted() {
-        return Environment.getExternalStorageState().equals(
-                Environment.MEDIA_MOUNTED);
-    }
-
-    /**
-     * get default directory to save cropped image
-     * @param context
-     * @return
-     */
-    public static String getDefaultSaveDir(Context context){
-        String path;
-        if(isSdCardMounted()){
-            path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        }else{
-            path = context.getFilesDir().getAbsolutePath();
-        }
-        return path + File.separator + context.getPackageName() + File.separator;
     }
 }

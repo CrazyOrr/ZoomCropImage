@@ -10,10 +10,27 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+
 /**
  * http://stackoverflow.com/questions/20067508/get-real-path-from-uri-android-kitkat-new-storage-access-framework
  */
 public class FileUtils {
+
+    public static File createFile(String dir, String name) {
+        File file = new File(dir, name);
+        File dirFile = file.getParentFile();
+        if (!dirFile.exists()) {
+            dirFile.mkdirs();
+        }
+        return file;
+    }
+
+    public static boolean isSdCardMounted() {
+        return Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED);
+    }
+
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
      * Framework Documents, as well as the _data field for the MediaStore and

@@ -1,12 +1,16 @@
 package com.github.crazyorr.zoomcropimage.sample;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -16,9 +20,14 @@ import com.github.crazyorr.zoomcropimage.ZoomCropImageActivity;
 import java.io.File;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private static final String KEY_PICTURE_URI = "KEY_PICTURE_URI";
+
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
     private static final int REQUEST_CODE_SELECT_PICTURE = 0;
     private static final int REQUEST_CODE_CROP_PICTURE = 1;
 
@@ -34,22 +43,16 @@ public class MainActivity extends Activity {
             return null;
         }
 
-        File pictureStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), BuildConfig.APPLICATION_ID);
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
+        File picture = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES) + File.separator + BuildConfig.APPLICATION_ID,
+                fileName);
 
-        // Create the storage directory if it does not exist
-        if (!pictureStorageDir.exists()) {
-            if (!pictureStorageDir.mkdirs()) {
-                Log.d(TAG, "failed to create directory");
-                return null;
-            }
+        File dirFile = picture.getParentFile();
+        if (!dirFile.exists()) {
+            dirFile.mkdirs();
         }
 
-        // Create a media file name
-        File pictureFile = new File(pictureStorageDir.getPath() + File.separator + fileName);
-        return pictureFile;
+        return picture;
     }
 
     @Override
@@ -75,6 +78,21 @@ public class MainActivity extends Activity {
                 startActivityForResult(chooserIntent, REQUEST_CODE_SELECT_PICTURE);
             }
         });
+        if (savedInstanceState != null) {
+            mPictureUri = savedInstanceState.getParcelable(KEY_PICTURE_URI);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        requestPermissionWriteExternalStorage();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_PICTURE_URI, mPictureUri);
     }
 
     @Override
@@ -98,9 +116,13 @@ public class MainActivity extends Activity {
                         intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_OUTPUT_WIDTH, PICTURE_WIDTH);
                         intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_OUTPUT_HEIGHT, PICTURE_HEIGHT);
                         intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_CROP_SHAPE, CropShape.SHAPE_OVAL);   //optional
-                        intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_SAVE_DIR,
-                                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + getPackageName());   //optional
-                        intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_FILE_NAME, "cropped.png");   //optional
+                        File croppedPicture = createPictureFile("cropped.png");
+                        if (croppedPicture != null) {
+                            intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_SAVE_DIR,
+                                    croppedPicture.getParent());   //optional
+                            intent.putExtra(ZoomCropImageActivity.INTENT_EXTRA_FILE_NAME,
+                                    croppedPicture.getName());   //optional
+                        }
                         startActivityForResult(intent, REQUEST_CODE_CROP_PICTURE);
                         break;
                 }
@@ -123,6 +145,30 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (!(grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    finish();
+                }
+                break;
+            }
+        }
+    }
+
+    private void requestPermissionWriteExternalStorage() {
+        final String permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        final int requestCode = MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
+
+        if (ContextCompat.checkSelfPermission(this, permission)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+        }
     }
 }

@@ -22,6 +22,6 @@
         android:layout_height="match_parent"
         android:layout_above="@id/id_btn"
         android:adjustViewBounds="true"
-        android:scaleType="centerInside" />
+        android:scaleType="fitCenter" />
 
 </RelativeLayout>

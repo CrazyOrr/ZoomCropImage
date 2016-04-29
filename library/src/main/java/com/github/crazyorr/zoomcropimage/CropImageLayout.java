@@ -93,81 +93,6 @@ public class CropImageLayout extends RelativeLayout {
 		this.addView(mCropImageBorderView, lp);
     }
 
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
-		mWidth = w;
-		mHeight = h;
-		initCropSize();
-	}
-	
-	/**
-	 * 裁切图片
-	 * 
-	 * @return
-	 */
-	public Bitmap crop() {
-		return mZoomCropImageView.crop(mOutputWidth, mOutputHeight);
-	}
-	
-	/**
-	 * 必须提供Uri，否则无法获取到旋转信息
-	 * @param uri
-	 */
-	public void setImageURI(Uri uri){
-		String path = FileUtils.getPath(getContext(), uri);
-
-		WindowManager windowManager = (WindowManager)getContext()
-				.getSystemService(Context.WINDOW_SERVICE);
-		Display windowDisplay = windowManager.getDefaultDisplay();
-		Point size = new Point();
-		windowDisplay.getSize(size);
-		Log.i(TAG, "Screen Width = " + size.x);
-		Log.i(TAG, "Screen Height = " + size.y);
-		
-		int degrees = readImageRotationDegree(path);
-		Bitmap rotatedBitmap = rotaingBitmap(degrees,
-				sampleBitmap(getContext(), uri, size.x, size.y));
-		mZoomCropImageView.setImageBitmap(rotatedBitmap);
-	}
-	
-	/**
-	 * 设置输出图片尺寸
-	 * @param outputWidth
-	 * @param outputHeight
-	 */
-	public void setOutputSize(int outputWidth, int outputHeight){
-		mOutputWidth = outputWidth;
-		mOutputHeight = outputHeight;
-		initCropSize();
-	}
-	
-	/**
-	 * 设置切割形状
-	 * @param cropShape
-	 */
-	public void setCropShape(int cropShape){
-		mCropImageBorderView.setCropShape(cropShape);
-		mZoomCropImageView.setCropShape(cropShape);
-	}
-	
-	private void initCropSize(){
-		if(mWidth != 0 && mHeight != 0
-				&& mOutputWidth != 0 && mOutputHeight != 0){
-			final double CROP_SIZE_RATIO = 0.9;
-			double scaleWidth = Math.floor(mWidth * CROP_SIZE_RATIO / mOutputWidth);
-			double scaleHeight = Math.floor(mHeight * CROP_SIZE_RATIO / mOutputHeight);
-			//放大倍数取较小值
-			double scale = Math.min(scaleWidth, scaleHeight);
-			
-			int mCropWidth = (int)(mOutputWidth * scale);
-			int mCropHeight = (int)(mOutputHeight * scale);
-			
-			mZoomCropImageView.setCropSize(mCropWidth, mCropHeight);
-			mCropImageBorderView.setCropSize(mCropWidth, mCropHeight);
-		}
-	}
-
 	/**
 	 * 读取图片属性：旋转的角度
 	 * @param path 图片绝对路径
@@ -196,7 +121,7 @@ public class CropImageLayout extends RelativeLayout {
 		}
 		return degree;
 	}
-
+	
 	/**
 	 * 旋转图片
 	 * @param degrees
@@ -205,14 +130,14 @@ public class CropImageLayout extends RelativeLayout {
 	 */
 	public static Bitmap rotaingBitmap(int degrees , Bitmap bitmap) {
 		// 旋转图片 动作
-		Matrix matrix = new Matrix();;
+		Matrix matrix = new Matrix();
 		matrix.postRotate(degrees);
 		// 创建新的图片
 		Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
 				bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 		return resizedBitmap;
 	}
-
+	
 	/**
 	 * 压缩图片尺寸
 	 * @return
@@ -266,5 +191,80 @@ public class CropImageLayout extends RelativeLayout {
 			e.printStackTrace();
 		}
 		return bitmap;
+	}
+	
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		mWidth = w;
+		mHeight = h;
+		initCropSize();
+	}
+	
+	/**
+	 * 裁切图片
+	 *
+	 * @return
+	 */
+	public Bitmap crop() {
+		return mZoomCropImageView.crop(mOutputWidth, mOutputHeight);
+	}
+	
+	/**
+	 * 必须提供Uri，否则无法获取到旋转信息
+	 * @param uri
+	 */
+	public void setImageURI(Uri uri){
+		String path = FileUtils.getPath(getContext(), uri);
+
+		WindowManager windowManager = (WindowManager)getContext()
+				.getSystemService(Context.WINDOW_SERVICE);
+		Display windowDisplay = windowManager.getDefaultDisplay();
+		Point size = new Point();
+		windowDisplay.getSize(size);
+		Log.i(TAG, "Screen Width = " + size.x);
+		Log.i(TAG, "Screen Height = " + size.y);
+
+		int degrees = readImageRotationDegree(path);
+		Bitmap rotatedBitmap = rotaingBitmap(degrees,
+				sampleBitmap(getContext(), uri, size.x, size.y));
+		mZoomCropImageView.setImageBitmap(rotatedBitmap);
+	}
+
+	/**
+	 * 设置输出图片尺寸
+	 * @param outputWidth
+	 * @param outputHeight
+	 */
+	public void setOutputSize(int outputWidth, int outputHeight){
+		mOutputWidth = outputWidth;
+		mOutputHeight = outputHeight;
+		initCropSize();
+	}
+
+	/**
+	 * 设置切割形状
+	 * @param cropShape
+	 */
+	public void setCropShape(int cropShape){
+		mCropImageBorderView.setCropShape(cropShape);
+		mZoomCropImageView.setCropShape(cropShape);
+	}
+
+	private void initCropSize(){
+		if(mWidth != 0 && mHeight != 0
+				&& mOutputWidth != 0 && mOutputHeight != 0){
+			final double CROP_SIZE_RATIO = 0.9;
+			double scaleWidth = mWidth * CROP_SIZE_RATIO / mOutputWidth;
+			double scaleHeight = mHeight * CROP_SIZE_RATIO / mOutputHeight;
+			//缩放倍数取较小值
+			double scale = Math.min(scaleWidth, scaleHeight);
+
+			int mCropWidth = (int)(mOutputWidth * scale);
+			int mCropHeight = (int)(mOutputHeight * scale);
+
+			mZoomCropImageView.setCropSize(mCropWidth, mCropHeight);
+			mCropImageBorderView.setCropSize(mCropWidth, mCropHeight);
+		}
 	}
 }
