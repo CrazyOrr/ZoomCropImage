@@ -1,6 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    // workaround for Gradle version check
+    System.properties['com.android.build.gradle.overrideVersionCheck'] = 'true'
     repositories {
         jcenter()
     }
@@ -14,7 +16,7 @@ buildscript {
 
 allprojects {
     group 'com.github.crazyorr'
-    version '0.1.1'
+    version '0.1.2'
     repositories {
         jcenter()
     }

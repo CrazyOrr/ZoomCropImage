@@ -6,7 +6,7 @@ An Android library for zooming and cropping image.
 ## Download
 ### Gradle
 ```gradle
-compile 'com.github.crazyorr:zoom-crop-image:0.1.1'
+compile 'com.github.crazyorr:zoom-crop-image:0.1.2'
 ```
 
 ### Maven
@@ -14,7 +14,7 @@ compile 'com.github.crazyorr:zoom-crop-image:0.1.1'
 <dependency>
     <groupId>com.github.crazyorr</groupId>
     <artifactId>zoom-crop-image</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 </dependency>
 ```
 

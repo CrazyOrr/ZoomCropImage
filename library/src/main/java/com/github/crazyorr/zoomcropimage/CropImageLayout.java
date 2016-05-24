@@ -65,14 +65,14 @@ public class CropImageLayout extends RelativeLayout {
 
 		TypedArray tArray = context.obtainStyledAttributes(attrs,
                 R.styleable.CropImage);
-		float scaleMin = tArray.getFloat(R.styleable.CropImage_scaleMin, DEFAULT_SCALE_MIN);
-		float scaleMax = tArray.getFloat(R.styleable.CropImage_scaleMax, DEFAULT_SCALE_MAX);
-		float borderWidth = tArray.getDimension(R.styleable.CropImage_borderWidth, 
+		float scaleMin = tArray.getFloat(R.styleable.CropImage_zci_scaleMin, DEFAULT_SCALE_MIN);
+		float scaleMax = tArray.getFloat(R.styleable.CropImage_zci_scaleMax, DEFAULT_SCALE_MAX);
+		float borderWidth = tArray.getDimension(R.styleable.CropImage_zci_borderWidth,
 				getResources().getDimension(R.dimen.default_border_width));
-		int borderColor = tArray.getColor(R.styleable.CropImage_borderColor, Color.WHITE);
-		int shaderColor = tArray.getColor(R.styleable.CropImage_shaderColor, 
+		int borderColor = tArray.getColor(R.styleable.CropImage_zci_borderColor, Color.WHITE);
+		int shaderColor = tArray.getColor(R.styleable.CropImage_zci_shaderColor,
 				getResources().getColor(R.color.default_shader_color));
-		int cropShape = tArray.getInt(R.styleable.CropImage_cropShape, 
+		int cropShape = tArray.getInt(R.styleable.CropImage_zci_cropShape,
 				CropShape.SHAPE_RECTANGLE);
 		tArray.recycle();
 		
@@ -95,6 +95,7 @@ public class CropImageLayout extends RelativeLayout {
 
 	/**
 	 * 读取图片属性：旋转的角度
+	 *
 	 * @param path 图片绝对路径
 	 * @return degree旋转的角度
 	 */
@@ -121,14 +122,15 @@ public class CropImageLayout extends RelativeLayout {
 		}
 		return degree;
 	}
-	
+
 	/**
 	 * 旋转图片
+	 *
 	 * @param degrees
 	 * @param bitmap
 	 * @return Bitmap
 	 */
-	public static Bitmap rotaingBitmap(int degrees , Bitmap bitmap) {
+	public static Bitmap rotaingBitmap(int degrees, Bitmap bitmap) {
 		// 旋转图片 动作
 		Matrix matrix = new Matrix();
 		matrix.postRotate(degrees);
@@ -137,13 +139,14 @@ public class CropImageLayout extends RelativeLayout {
 				bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 		return resizedBitmap;
 	}
-	
+
 	/**
 	 * 压缩图片尺寸
+	 *
 	 * @return
 	 */
 	public static Bitmap sampleBitmap(Context context, Uri uri,
-									  int width, int height){
+									  int width, int height) {
 
 		Bitmap bitmap = null;
 		//先量尺寸，如果太大，要作sample，否则会报OutOfMemory错误
@@ -161,19 +164,19 @@ public class CropImageLayout extends RelativeLayout {
 
 		int sampleWidth = 0;
 		int sampleHeight = 0;
-		if(options.outWidth < options.outHeight){
-			if(width < height){
+		if (options.outWidth < options.outHeight) {
+			if (width < height) {
 				sampleWidth = options.outWidth / width;
 				sampleHeight = options.outHeight / height;
-			}else{
+			} else {
 				sampleWidth = options.outWidth / height;
 				sampleHeight = options.outHeight / width;
 			}
-		}else{
-			if(width < height){
+		} else {
+			if (width < height) {
 				sampleWidth = options.outHeight / width;
 				sampleHeight = options.outWidth / height;
-			}else{
+			} else {
 				sampleWidth = options.outHeight / height;
 				sampleHeight = options.outWidth / width;
 			}
@@ -192,7 +195,7 @@ public class CropImageLayout extends RelativeLayout {
 		}
 		return bitmap;
 	}
-	
+
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
@@ -200,7 +203,7 @@ public class CropImageLayout extends RelativeLayout {
 		mHeight = h;
 		initCropSize();
 	}
-	
+
 	/**
 	 * 裁切图片
 	 *
@@ -209,15 +212,16 @@ public class CropImageLayout extends RelativeLayout {
 	public Bitmap crop() {
 		return mZoomCropImageView.crop(mOutputWidth, mOutputHeight);
 	}
-	
+
 	/**
 	 * 必须提供Uri，否则无法获取到旋转信息
+	 *
 	 * @param uri
 	 */
-	public void setImageURI(Uri uri){
+	public void setImageURI(Uri uri) {
 		String path = FileUtils.getPath(getContext(), uri);
 
-		WindowManager windowManager = (WindowManager)getContext()
+		WindowManager windowManager = (WindowManager) getContext()
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display windowDisplay = windowManager.getDefaultDisplay();
 		Point size = new Point();
@@ -233,10 +237,11 @@ public class CropImageLayout extends RelativeLayout {
 
 	/**
 	 * 设置输出图片尺寸
+	 *
 	 * @param outputWidth
 	 * @param outputHeight
 	 */
-	public void setOutputSize(int outputWidth, int outputHeight){
+	public void setOutputSize(int outputWidth, int outputHeight) {
 		mOutputWidth = outputWidth;
 		mOutputHeight = outputHeight;
 		initCropSize();

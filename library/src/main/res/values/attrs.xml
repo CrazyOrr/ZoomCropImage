@@ -2,12 +2,12 @@
 <resources>
 
     <declare-styleable name="CropImage">
-        <attr name="borderWidth" format="dimension" />   
-        <attr name="borderColor" format="color" />
-        <attr name="shaderColor" format="color" />
-        <attr name="scaleMax" format="float" />
-        <attr name="scaleMin" format="float" />
-        <attr name="cropShape">
+        <attr name="zci_borderWidth" format="dimension" />
+        <attr name="zci_borderColor" format="color" />
+        <attr name="zci_shaderColor" format="color" />
+        <attr name="zci_scaleMax" format="float" />
+        <attr name="zci_scaleMin" format="float" />
+        <attr name="zci_cropShape">
             <flag name="rectangle" value="0" />
             <flag name="oval" value="1" />
         </attr>

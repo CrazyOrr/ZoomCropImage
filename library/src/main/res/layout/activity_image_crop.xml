@@ -36,8 +36,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/id_ll_btns"
-        zoomcropimage:borderColor="@android:color/white"
-        zoomcropimage:borderWidth="1dp"
-        zoomcropimage:shaderColor="#BB000000" />
+        zoomcropimage:zci_borderColor="@android:color/white"
+        zoomcropimage:zci_borderWidth="1dp"
+        zoomcropimage:zci_shaderColor="#BB000000" />
 
 </RelativeLayout>
