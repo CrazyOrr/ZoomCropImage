@@ -34,6 +34,11 @@ public class ZoomCropImageView extends ImageView implements
 
 	protected static final String TAG = ZoomCropImageView.class.getSimpleName();
 	/**
+	 * 用于存放矩阵的9个值
+	 */
+	private final float[] matrixValues = new float[9];
+	private final Matrix mScaleMatrix = new Matrix();
+	/**
 	 * 缩放最大值
 	 */
 	public float mScaleMax;
@@ -41,29 +46,19 @@ public class ZoomCropImageView extends ImageView implements
 	 * 缩放最小值
 	 */
 	private float mScaleMin;
-
 	/**
 	 * 切割形状
 	 */
 	private int mCropShape;
-
 	/**
 	 * 初始化时的缩放比例，如果图片宽或高大于屏幕，此值将小于0
 	 */
 	private float initScale = 1.0f;
 	private boolean once = true;
-
-	/**
-	 * 用于存放矩阵的9个值
-	 */
-	private final float[] matrixValues = new float[9];
-
 	/**
 	 * 缩放的手势检测
 	 */
 	private ScaleGestureDetector mScaleGestureDetector = null;
-	private final Matrix mScaleMatrix = new Matrix();
-
 	/**
 	 * 用于双击检测
 	 */
@@ -80,6 +75,14 @@ public class ZoomCropImageView extends ImageView implements
 
 	private boolean isCanDrag;
 	private int lastPointerCount;
+	/**
+	 * 切割矩形的宽度
+	 */
+	private int mCropWidth;
+	/**
+	 * 切割矩形的高度
+	 */
+	private int mCropHeight;
 
 	public ZoomCropImageView(Context context) {
 		this(context, null);
@@ -117,66 +120,6 @@ public class ZoomCropImageView extends ImageView implements
 				});
 		mScaleGestureDetector = new ScaleGestureDetector(context, this);
 		this.setOnTouchListener(this);
-	}
-
-	/**
-	 * 自动缩放的任务
-	 *
-	 * @author zhy
-	 *
-	 */
-	private class AutoScaleRunnable implements Runnable {
-		static final float BIGGER = 1.07f;
-		static final float SMALLER = 0.93f;
-		private float mTargetScale;
-		private float tmpScale;
-
-		/**
-		 * 缩放的中心
-		 */
-		private float x;
-		private float y;
-
-		/**
-		 * 传入目标缩放值，根据目标值与当前值，判断应该放大还是缩小
-		 *
-		 * @param targetScale
-		 */
-		public AutoScaleRunnable(float targetScale, float x, float y) {
-			this.mTargetScale = targetScale;
-			this.x = x;
-			this.y = y;
-			if (getScale() < mTargetScale) {
-				tmpScale = BIGGER;
-			} else {
-				tmpScale = SMALLER;
-			}
-
-		}
-
-		@Override
-		public void run() {
-			// 进行缩放
-			mScaleMatrix.postScale(tmpScale, tmpScale, x, y);
-			checkBorder();
-			setImageMatrix(mScaleMatrix);
-
-			final float currentScale = getScale();
-			// 如果值在合法范围内，继续缩放
-			if (((tmpScale > 1f) && (currentScale < mTargetScale))
-					|| ((tmpScale < 1f) && (mTargetScale < currentScale))) {
-				ZoomCropImageView.this.postDelayed(this, 16);
-			} else
-			// 设置为目标的缩放比例
-			{
-				final float deltaScale = mTargetScale / currentScale;
-				mScaleMatrix.postScale(deltaScale, deltaScale, x, y);
-				checkBorder();
-				setImageMatrix(mScaleMatrix);
-				isAutoScale = false;
-			}
-
-		}
 	}
 
 	@Override
@@ -328,15 +271,6 @@ public class ZoomCropImageView extends ImageView implements
 		getViewTreeObserver().removeGlobalOnLayoutListener(this);
 	}
 
-	/**
-	 * 切割矩形的宽度
-	 */
-	private int mCropWidth;
-	/**
-	 * 切割矩形的高度
-	 */
-	private int mCropHeight;
-
 	@Override
 	public void onGlobalLayout() {
 		if (once) {
@@ -391,6 +325,7 @@ public class ZoomCropImageView extends ImageView implements
 		int height = getHeight();
 		int horizontalPadding = (width - mCropWidth) / 2;
 		int verticalPadding = (height - mCropHeight) / 2;
+		// TODO may cause OutOfMemory exception
 		Bitmap bitmap = Bitmap.createBitmap(width, height,
 				Bitmap.Config.ARGB_8888);
 // 		bitmap.setHasAlpha(true);
@@ -400,13 +335,13 @@ public class ZoomCropImageView extends ImageView implements
 		Path clipPath = new Path();
 		RectF rect = new RectF(horizontalPadding, verticalPadding, width
 				- horizontalPadding, height - verticalPadding);
-		switch(mCropShape){
-		case CropShape.SHAPE_RECTANGLE:
-			clipPath.addRect(rect, Direction.CW);
-			break;
-		case CropShape.SHAPE_OVAL:
-			clipPath.addOval(rect, Direction.CW);
-			break;
+		switch (mCropShape) {
+			case CropShape.SHAPE_RECTANGLE:
+				clipPath.addRect(rect, Direction.CW);
+				break;
+			case CropShape.SHAPE_OVAL:
+				clipPath.addOval(rect, Direction.CW);
+				break;
 		}
 		canvas.clipPath(clipPath);
 
@@ -482,5 +417,64 @@ public class ZoomCropImageView extends ImageView implements
 		}
 		mScaleMin = Math.max(scaleMin, mScaleMin);
 		mScaleMax = Math.max(scaleMax, mScaleMin);
+	}
+
+	/**
+	 * 自动缩放的任务
+	 *
+	 * @author zhy
+	 */
+	private class AutoScaleRunnable implements Runnable {
+		static final float BIGGER = 1.07f;
+		static final float SMALLER = 0.93f;
+		private float mTargetScale;
+		private float tmpScale;
+
+		/**
+		 * 缩放的中心
+		 */
+		private float x;
+		private float y;
+
+		/**
+		 * 传入目标缩放值，根据目标值与当前值，判断应该放大还是缩小
+		 *
+		 * @param targetScale
+		 */
+		public AutoScaleRunnable(float targetScale, float x, float y) {
+			this.mTargetScale = targetScale;
+			this.x = x;
+			this.y = y;
+			if (getScale() < mTargetScale) {
+				tmpScale = BIGGER;
+			} else {
+				tmpScale = SMALLER;
+			}
+
+		}
+
+		@Override
+		public void run() {
+			// 进行缩放
+			mScaleMatrix.postScale(tmpScale, tmpScale, x, y);
+			checkBorder();
+			setImageMatrix(mScaleMatrix);
+
+			final float currentScale = getScale();
+			// 如果值在合法范围内，继续缩放
+			if (((tmpScale > 1f) && (currentScale < mTargetScale))
+					|| ((tmpScale < 1f) && (mTargetScale < currentScale))) {
+				ZoomCropImageView.this.postDelayed(this, 16);
+			} else
+			// 设置为目标的缩放比例
+			{
+				final float deltaScale = mTargetScale / currentScale;
+				mScaleMatrix.postScale(deltaScale, deltaScale, x, y);
+				checkBorder();
+				setImageMatrix(mScaleMatrix);
+				isAutoScale = false;
+			}
+
+		}
 	}
 }
